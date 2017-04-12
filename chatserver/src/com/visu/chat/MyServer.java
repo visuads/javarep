@@ -1,9 +1,33 @@
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+package com.visu.chat;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 /****************************/
 class MyServer
 {
@@ -23,16 +47,16 @@ try{
 	while(true)
 	{
 	s=ss.accept();
-	Runnable r=new MyThread(s,al,users);
-	Thread t=new Thread(r);
+	final Runnable r=new MyThread(s,al,users);
+	final Thread t=new Thread(r);
 	t.start();
 //	System.out.println("Total alive clients : "+ss.);
 	}
    }
-catch(Exception e){System.err.println("Server constructor"+e);}
+catch(final Exception e){System.err.println("Server constructor"+e);}
 }
 /////////////////////////
-public static void main(String [] args)
+public static void main(final String [] args)
 {
 new MyServer();
 }
@@ -46,27 +70,27 @@ ArrayList al;
 ArrayList users;
 String username;
 ///////////////////////
-MyThread (Socket s, ArrayList al,ArrayList users)
+MyThread (final Socket s, final ArrayList al,final ArrayList users)
 {
 this.s=s;
 this.al=al;
 this.users=users;
 try{
-	DataInputStream dis=new DataInputStream(s.getInputStream());
+	final DataInputStream dis=new DataInputStream(s.getInputStream());
 	username=dis.readUTF();
 	al.add(s);
 	users.add(username);
 	tellEveryOne("****** "+ username+" Logged in at "+(new Date())+" ******");
 	sendNewUserList();
     }
-catch(Exception e){System.err.println("MyThread constructor  "+e);}
+catch(final Exception e){System.err.println("MyThread constructor  "+e);}
 }
 ///////////////////////
 public void run()
 {
 String s1;
 try{
-	DataInputStream dis=new DataInputStream(s.getInputStream());
+	final DataInputStream dis=new DataInputStream(s.getInputStream());
 	do
 	{
 	s1=dis.readUTF();
@@ -75,7 +99,7 @@ try{
 	tellEveryOne(username+" said: "+" : "+s1);
 	}
 	while(true);
-	DataOutputStream tdos=new DataOutputStream(s.getOutputStream());
+	final DataOutputStream tdos=new DataOutputStream(s.getOutputStream());
 	tdos.writeUTF(MyServer.LOGOUT_MESSAGE);
 	tdos.flush();
 	users.remove(username);
@@ -85,7 +109,7 @@ try{
 	s.close();
 
    }
-catch(Exception e){System.out.println("MyThread Run"+e);}
+catch(final Exception e){System.out.println("MyThread Run"+e);}
 }
 ////////////////////////
 public void sendNewUserList()
@@ -94,19 +118,19 @@ public void sendNewUserList()
 
 }
 ////////////////////////
-public void tellEveryOne(String s1)	
+public void tellEveryOne(final String s1)	
 {
-Iterator i=al.iterator();
+final Iterator i=al.iterator();
 while(i.hasNext())
 {
 try{
-	Socket temp=(Socket)i.next();
-	DataOutputStream dos=new DataOutputStream(temp.getOutputStream());
+	final Socket temp=(Socket)i.next();
+	final DataOutputStream dos=new DataOutputStream(temp.getOutputStream());
 	dos.writeUTF(s1);
 	dos.flush();
 	//System.out.println("sent to : "+temp.getPort()+"  : "+ s1);
    }
-catch(Exception e){System.err.println("TellEveryOne "+e);}
+catch(final Exception e){System.err.println("TellEveryOne "+e);}
 }
 }
 ///////////////////////
@@ -138,28 +162,28 @@ logoutButton=new JButton("Log out");
 loginButton=new JButton("Log in");
 exitButton=new JButton("Exit");
 
-JPanel center1=new JPanel();
+final JPanel center1=new JPanel();
 center1.setLayout(new BorderLayout());
 center1.add(new JLabel("Broad Cast messages from all online users",JLabel.CENTER),"North");
 center1.add(new JScrollPane(txtBroadcast),"Center");
 
-JPanel south1=new JPanel();
+final JPanel south1=new JPanel();
 south1.setLayout(new FlowLayout());
 south1.add(new JScrollPane(txtMessage));
 south1.add(sendButton);
 
-JPanel south2=new JPanel();
+final JPanel south2=new JPanel();
 south2.setLayout(new FlowLayout());
 south2.add(loginButton);
 south2.add(logoutButton);
 south2.add(exitButton);
 
-JPanel south=new JPanel();
+final JPanel south=new JPanel();
 south.setLayout(new GridLayout(2,1));
 south.add(south1);
 south.add(south2);
 
-JPanel east=new JPanel();
+final JPanel east=new JPanel();
 east.setLayout(new BorderLayout());
 east.add(new JLabel("Online Users",JLabel.CENTER),"East");
 east.add(new JScrollPane(usersList),"South");
@@ -180,11 +204,11 @@ exitButton.addActionListener(this);
 logoutButton.setEnabled(false);
 loginButton.setEnabled(true);
 txtMessage.addFocusListener(new FocusAdapter()
-{public void focusGained(FocusEvent fe){txtMessage.selectAll();}});
+{public void focusGained(final FocusEvent fe){txtMessage.selectAll();}});
 
 chatWindow.addWindowListener(new WindowAdapter()
 {
-public void windowClosing(WindowEvent ev)
+public void windowClosing(final WindowEvent ev)
 {
 if(s!=null)
 {
@@ -196,9 +220,9 @@ System.exit(0);
 });
 }
 ///////////////////////////
-public void actionPerformed(ActionEvent ev)
+public void actionPerformed(final ActionEvent ev)
 {
-JButton temp=(JButton)ev.getSource();
+final JButton temp=(JButton)ev.getSource();
 if(temp==sendButton)
 {
 if(s==null)
@@ -207,11 +231,11 @@ try{
 	dos.writeUTF(txtMessage.getText());
 	txtMessage.setText("");
      }
-catch(Exception excp){txtBroadcast.append("\nsend button click :"+excp);}
+catch(final Exception excp){txtBroadcast.append("\nsend button click :"+excp);}
 }
 if(temp==loginButton)
 {
-String uname=JOptionPane.showInputDialog(chatWindow,"Enter Your lovely nick name: ");
+final String uname=JOptionPane.showInputDialog(chatWindow,"Enter Your lovely nick name: ");
 if(uname!=null)
 	clientChat(uname); 
 }
@@ -239,26 +263,26 @@ dos.writeUTF(MyServer.LOGOUT_MESSAGE);
 Thread.sleep(500);
 s=null;
 }
-catch(Exception e){txtBroadcast.append("\n inside logoutSession Method"+e);}
+catch(final Exception e){txtBroadcast.append("\n inside logoutSession Method"+e);}
 
 logoutButton.setEnabled(false);
 loginButton.setEnabled(true);
 chatWindow.setTitle("Login for Chat");
 }
 //////////////////////////
-public void clientChat(String uname)
+public void clientChat(final String uname)
 {
 try{
      s=new Socket(InetAddress.getLocalHost(),MyServer.PORT);
      dis=new DataInputStream(s.getInputStream());
      dos=new DataOutputStream(s.getOutputStream());
-     ClientThread ct=new ClientThread(dis,this);
-     Thread t1=new Thread(ct);
+     final ClientThread ct=new ClientThread(dis,this);
+     final Thread t1=new Thread(ct);
      t1.start();
      dos.writeUTF(uname);
      chatWindow.setTitle(uname+" Chat Window");
     }
-catch(Exception e){txtBroadcast.append("\nClient Constructor " +e);}
+catch(final Exception e){txtBroadcast.append("\nClient Constructor " +e);}
 logoutButton.setEnabled(true);
 loginButton.setEnabled(false);
 }
@@ -269,7 +293,7 @@ public MyClient()
 //	clientChat();
 }
 ///////////////////////////////
-public static void main(String []args)
+public static void main(final String []args)
 {
 new MyClient();
 }
@@ -281,7 +305,7 @@ class ClientThread implements Runnable
 DataInputStream dis;
 MyClient client;
 
-ClientThread(DataInputStream dis,MyClient client)
+ClientThread(final DataInputStream dis,final MyClient client)
 {
 this.dis=dis;
 this.client=client;
@@ -300,26 +324,26 @@ do
 			break;
 		else
 			client.txtBroadcast.append("\n"+s2);
-		int lineOffset=client.txtBroadcast.getLineStartOffset(client.txtBroadcast.getLineCount()-1);
+		final int lineOffset=client.txtBroadcast.getLineStartOffset(client.txtBroadcast.getLineCount()-1);
 		client.txtBroadcast.setCaretPosition(lineOffset);
 	     }
-	catch(Exception e){client.txtBroadcast.append("\nClientThread run : "+e);}
+	catch(final Exception e){client.txtBroadcast.append("\nClientThread run : "+e);}
    }
 while(true);
 }
 //////////////////////////
 public void updateUsersList(String ul)
 {
-Vector ulist=new Vector();
+final Vector ulist=new Vector();
 
 ul=ul.replace("[","");
 ul=ul.replace("]","");
 ul=ul.replace(MyServer.UPDATE_USERS,"");
-StringTokenizer st=new StringTokenizer(ul,",");
+final StringTokenizer st=new StringTokenizer(ul,",");
 
 while(st.hasMoreTokens())
 {
-String temp=st.nextToken();
+final String temp=st.nextToken();
 ulist.add(temp);
 }
 client.usersList.setListData(ulist);
